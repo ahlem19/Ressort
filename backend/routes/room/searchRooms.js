@@ -10,20 +10,24 @@ router.route('/').get((req,res)=>{
 router.route('/add').post((req,res)=>{
     
     const image=req.body.image;
-    const roomtype=req.body.roomtype;
-    const roomprice=req.body.roomprice;
-    const roomsize=req.body.roomsize;
-    const breakfast=req.body.breakfast;
+    const type=req.body.type;
+    const details=req.body.details;
+    const price=req.body.price;
+    const nbrRoom=req.body.nbrRoom;
+    const maxcapacity=req.body.maxcapacity;
     const pets=req.body.pets;
-  console.log(image+""+roomtype)
+    const freebreakfast=req.body.freebreakfast;
+
 
     const newSearchRooms=new SearchRoom({
         image,
-        roomtype,
-        roomprice,
-        roomsize,
-        breakfast,
-        pets
+        type,
+        details,
+        price,
+        nbrRoom,
+        maxcapacity,
+        pets,
+        freebreakfast
        });
 
        newSearchRooms.save()
@@ -44,15 +48,18 @@ router.route('/:id').delete((req,res)=>{
     .catch(err=>res.status(400).json('Error:'+err));
 });
 
+
 router.route('/update/:id').post((req,res)=>{
     SearchRoom.findById(req.params.id)
     .then(searchroom=>{
         searchroom.image=req.body.image;
-        searchroom.roomtype=req.body.roomtype;
-        searchroom.roomprice=req.body.roomprice;
-        searchroom.roomsize=req.body.roomsize;
-        searchroom.breakfast=req.body.breakfast;
+        searchroom.type=req.body.type;
+        searchroom.details=req.body.details;
+        searchroom.price=req.body.price;
+        searchroom.nbrRoom=req.body.nbrRoom;
+        searchroom.maxcapacity=req.body.maxcapacity;
         searchroom.pets=req.body.pets;
+        searchroom.freebreakfast=req.body.freebreakfast;
        
    
         searchroom.save()

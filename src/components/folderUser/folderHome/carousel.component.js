@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {CarouselControl,CarouselItem,CarouselCaption,Carousel,CarouselIndicators,Button}from 'reactstrap';
 import axios from "axios";
 import '../../../components/fileCss.css';
-
+import { Redirect  } from 'react-router-dom';
 
 
 export default class Carousell extends Component {
@@ -12,7 +12,8 @@ export default class Carousell extends Component {
     this.state = {
             activeIndex: 0,
             // items :props.ListCourses
-            items :[]
+            items :[],
+            changeRouteRoom:false
           }
 
 
@@ -85,14 +86,16 @@ render() {
                     <p>
                     {item.captionHeader} 
                     </p>
-                    <Button className="btn-warning">OUR ROOMS</Button>
+                    <Button className="btn-warning" onClick={()=>  this.setState({changeRouteRoom:true}) }>OUR ROOMS</Button>
                 </div>
             </div>
       
         </CarouselItem>
       );
     });
-
+    if(this.state.changeRouteRoom)
+    return ( <Redirect to="/user/rooms"/> )
+      else 
     return (
       <Carousel
         activeIndex={activeIndex}
@@ -105,6 +108,8 @@ render() {
         <CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />
         <CarouselControl direction="next" directionText="Next" onClickHandler={this.next} />
       </Carousel>
+     
+ 
     );
   }
 }

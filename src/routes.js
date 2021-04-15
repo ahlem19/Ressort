@@ -1,5 +1,6 @@
 import Home from  "../src/components/folderUser/home.component";
 import Rooms from  "../src/components/folderUser/rooms.component";
+import Booking from  "../src/components/folderUser/booking.component";
 import Login from  "../src/components/folderAdmin/login.component";
 import InterfaceAdmin from  "../src/components/folderAdmin/InterfaceAdmin.component";
 import EditCarousel from  "../src/components/folderAdmin/viewInterface Admin/home/edit";
@@ -20,6 +21,14 @@ var routes = [
     name: "Rooms",
     icon: "ni ni-key-25 text-info",
     component: Rooms,
+    layout: "/user",
+    display: true
+  },
+  {
+    path: "/booking",
+    name: "Booking",
+    icon: "ni ni-key-25 text-info",
+    component: Booking,
     layout: "/user",
     display: true
   },

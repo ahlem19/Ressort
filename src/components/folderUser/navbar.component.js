@@ -40,6 +40,14 @@ toggleNavbar(){
               <NavLink to="/user/rooms" tag={Link}>Rooms</NavLink>
             
             </NavItem>
+            <NavItem>
+              <NavLink to="/user/booking" tag={Link}>Booking</NavLink>
+            
+            </NavItem>
+            <NavItem>
+              <NavLink to="/admin/login" tag={Link} >admin</NavLink>
+            
+            </NavItem>
             
           </Nav>
         </Collapse>

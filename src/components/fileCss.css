@@ -28,3 +28,82 @@
     float: none; /* Added */
     margin-bottom: 10px; /* Added */
   }
+
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+
+  
+  .container .btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  .mydivouter{
+	position:relative;
+    margin: 0 auto;
+}
+.mydivoverlap{
+    position: relative;
+    z-index: 1;
+}
+.mybuttonoverlap{
+	position: absolute;
+    z-index: 2;
+    top: 44px;
+    display: none;
+    left: 59px;	
+}
+.mydivouter:hover .mybuttonoverlap{ 
+	display:block;
+}
+
+.tableFixHead {
+    overflow-y: auto;
+    height: 70vh;
+  }
+  .tableFixHead thead th {
+    position: sticky;
+    top: 0;
+  }
+  Table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th,
+  td {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+  }
+  th {
+    background: #eee;
+  }
+
+  
+  .previous {
+    background-color: #f1f1f1;
+    color: black;
+  }
+  
+  .next {
+    background-color: #f1f1f1;
+    color: black;
+  }
+  
+  .round {
+    border-radius: 50%;
+  }

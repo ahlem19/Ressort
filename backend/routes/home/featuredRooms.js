@@ -10,12 +10,24 @@ router.route('/').get((req,res)=>{
 router.route('/add').post((req,res)=>{
     
     const image=req.body.image;
-    const text=req.body.text;
-  console.log(image+""+text)
+    const type=req.body.type;
+    const details=req.body.details;
+    const price=req.body.price;
+    const nbrRoom=req.body.nbrRoom;
+    const maxcapacity=req.body.maxcapacity;
+    const pets=req.body.pets;
+    const freebreakfast=req.body.freebreakfast;
+
 
     const newFeaturedRooms=new FeaturedRoom({
         image,
-        text,
+        type,
+        details,
+        price,
+        nbrRoom,
+        maxcapacity,
+        pets,
+        freebreakfast
        });
 
        newFeaturedRooms.save()
@@ -40,7 +52,13 @@ router.route('/update/:id').post((req,res)=>{
     FeaturedRoom.findById(req.params.id)
     .then(featuredroom=>{
         featuredroom.image=req.body.image;
-        featuredroom.text=req.body.text;
+        featuredroom.type=req.body.type;
+        featuredroom.details=req.body.details;
+        featuredroom.price=req.body.price;
+        featuredroom.nbrRoom=req.body.nbrRoom;
+        featuredroom.maxcapacity=req.body.maxcapacity;
+        featuredroom.pets=req.body.pets;
+        featuredroom.freebreakfast=req.body.freebreakfast;
        
    
         featuredroom.save()

@@ -117,6 +117,7 @@ handleSubmit(event) {
       
           <Card className=" shadow border-0">
             <CardHeader className="bg-transparent pb-5">
+              
             <div className="text-muted text-center mt-2 mb-3">
                 <h6>Sign in with</h6>
               </div>
@@ -220,9 +221,10 @@ handleSubmit(event) {
                   </NavLink>
             </Col>
           </Row>
-         
-        </Col>
    
+        </Col>
+     
+    
         </div>
 </div>
 

@@ -1,119 +1,144 @@
-import React, { Component } from 'react';
-import axios from "axios"
-import { Button ,Table,Row, Modal, ModalHeader, ModalBody,ModalFooter,Col,Form,FormGroup,Label,Input} from 'reactstrap';
+import React  from 'react';
+import { Button ,Table,Row, Modal, ModalHeader, ModalBody,ModalFooter,Col,Form,FormGroup,Input,Label} from 'reactstrap';
 
+import axios from "axios"
 
 
 const Carousel= props =>(
-    <tr>
-      <td  ><img style={{ height: '8rem' }}  className="img-fluid img-thumbnail border-primary d-block  m-2 " src={props.carousel.image} alt="img" /></td>
+ 
+    <tr >
+      <td  ><img style={{ height: '8rem',width:'10rem' }}  className="img-fluid img-thumbnail border-primary d-block  m-2 " src={props.carousel.image} alt="img" /></td>
       <td>{props.carousel.captionText}</td>
       <td>{props.carousel.captionHeader}</td>
-      <td>
-        <a href="#" onClick={()=> {props.deleteCarousel(props.carousel._id)}}><span className="fa fa-trash text-danger" ></span></a>
-      </td>
-     <td>
-     <a href="#" onClick={()=> {props.editCarousel(props.carousel._id)}}><span className="fa fa-edit" ></span></a>
-     </td> 
+      <td><a href="#" onClick={()=> {props.deleteCarousel(props.carousel._id)}}><span className="fa fa-trash text-danger" ></span></a></td>
+      <td><a href="#" onClick={()=> {props.editCarousel(props.carousel._id)}}><span className="fa fa-edit" ></span></a></td> 
     </tr>
+   
   )
 
-export default class CarouselInterface extends Component {
+export default class CarouselInterface extends React.Component {
 
-    constructor(props){
-        super(props);
-        this.deleteCarousels= this.deleteCarousels.bind(this);
-        this.editCarousel= this.editCarousel.bind(this);
-       
+  constructor(props){
+    super(props);
+    this.handleChange=this.handleChange.bind(this);  
+    this.deleteCarousels= this.deleteCarousels.bind(this);
+    this.editCarousel= this.editCarousel.bind(this);
+    this.fileChanged=this.fileChanged.bind(this)
+    this.onSubmit=this.onSubmit.bind(this);
+    this.onSubmitEdit=this.onSubmitEdit.bind(this);
 
-        this.onChangeImage = this.onChangeImage.bind(this);
-      this.onChangeCaptionText=this.onChangeCaptionText.bind(this);
-      this.onChangeCaptionHeader=this.onChangeCaptionHeader.bind(this);
-      this.onSubmit=this.onSubmit.bind(this);
-      this.onSubmitEdit=this.onSubmitEdit.bind(this);
-     
-
-        this.state={
-          carousels:[],
-          image: '',
-          captionText:'',
-          captionHeader:'',
-          showModal: false,
-          showModalEdit: false,
-          id:"",
-        
-          
-        }
+    this.state={
+      carousels:[],
+      image: '',
+      captionText:'',
+      captionHeader:'',
+      showModal: false,
+      showModalEdit: false,
+      id:"",
+      selectedFile: "",
+      imagePreviewUrl: "",
+      update:false,
+      input:{"captionText":"","captionHeader":""}
       }
+   
+}
 
  
-    onChangeImage(e) {
-      this.setState({
-        image: e.target.value
-      })
-    }
-  
-    onChangeCaptionText(e) {
-      this.setState({
-        captionText: e.target.value
-      })
-    }
-  
-    onChangeCaptionHeader(e) {
-      this.setState({
-        captionHeader: e.target.value
-      })
-    }
-  
-  
-  
-    onSubmit(e) {
-      e.preventDefault();
-  
-      const carousel = {
-        image: this.state.image,
-        captionText: this.state.captionText,
-        captionHeader: this.state.captionHeader,
-      
-      }
-  
-      console.log(carousel);
-  
-      axios.post("http://localhost:5000/carousels/add",carousel)
-      .then(res =>console.log(res.data))
-  
-      // window.location = '/';
-    }
-    onSubmite(e){
-      e.preventDefault();
-    }
-    onSubmitEdit(e) {
-    
-      e.preventDefault();
-     
-  const id = this.state.id
-      const carousel = {
-        image: this.state.image,
-        captionHeader: this.state.captionHeader,
-        captionText: this.state.captionText
-      }
-  
-      console.log(carousel);
-  
-      axios.post("http://localhost:5000/carousels/update/"+id, carousel)
-        .then(res => console.log(res.data))
-      
-      // window.location = '/';
-      
-    }
+fileChanged (event) {
+  this.setState({
+    selectedFile: event.target.files[0]
+  })
 
-    editCarousel(id){
+  let reader = new FileReader();
+  
+  reader.onloadend = () => {
+    this.setState({
+      imagePreviewUrl: reader.result
+      
+    });
+  }
+  reader.readAsDataURL(event.target.files[0])
+  var pathImage = (document.getElementById('img').value).split('\\');
+  var image="/"+pathImage[pathImage.length-1];
+  this.setState({
+    image: image
+  })
+  
+
+}
+
+handleChange(event){
+
+  let input = this.state.input;
+  input[event.target.name] = event.target.value;
+  this.setState({
+    input
+  });
+}
+
+
+onSubmit(e) {
+  e.preventDefault();
+
+  const carousel = {
+    image: this.state.image,
+    captionText: this.state.input["captionText"],
+    captionHeader: this.state.input["captionHeader"],
+  
+  }
+  axios.post("http://localhost:5000/carousels/add",carousel)
+  .then(res =>console.log(res.data))
+  .then( this.setState({
+    carousels:[...this.state.carousels,carousel],
+    imagePreviewUrl: "",
+    image: "",
+    input:{"captionText":"","captionHeader":""},
+    captionText: "",
+    captionHeader: "",
+    showModal: false,
+  }))
+  .then(axios.get("http://localhost:5000/carousels/")
+  .then(response=>{
+    this.setState({ carousels:response.data})
+    ;
+  })
+  .catch((error)=>{
+    console.log(error)
+  }))
+}
+  
+onSubmitEdit(e) {
+    
+    e.preventDefault();
+     
+    const id = this.state.id
+    const carousel = {
+      image: this.state.image,
+      captionHeader: this.state.input["captionHeader"],
+      captionText: this.state.input["captionText"]
+    }
+    
+
+    axios.post("http://localhost:5000/carousels/update/"+id, carousel)
+      .then(res => console.log(res.data))
+      .then( this.setState({
+        image: "",
+        input:{"captionText":"","captionHeader":""},
+        captionText: "",
+        captionHeader: "",
+        showModalEdit: false,
+        update:true
+      }))
+}
+
+
+editCarousel(id){
+
       axios.get("http://localhost:5000/carousels/"+id)
       .then(response => {
         this.setState({
           image: response.data.image,
-          captionText: response.data.captionText,
-          captionHeader: response.data.captionHeader,
+          input:{"captionText": response.data.captionText, "captionHeader": response.data.captionHeader},
           id:id,
           showModalEdit:true
         })   
@@ -121,182 +146,183 @@ export default class CarouselInterface extends Component {
       .catch(function (error) {
         console.log(error);
       })
-    }
+}
 
-      componentDidMount(){
-        axios.get("http://localhost:5000/carousels/")
+componentDidMount(){
+  axios.get("http://localhost:5000/carousels/")
+  .then(response=>{
+    this.setState({ carousels:response.data,})
+    ;
+  })
+  .catch((error)=>{
+    console.log(error)
+  })
+ 
+}
+
+deleteCarousels(id){
+  console.log(id)
+  axios.delete("http://localhost:5000/carousels/"+id)
+  .then(res=> console.log(res.data));
+  this.setState({
+    carousels:this.state.carousels.filter(el=>el._id !== id)
+  })
+ }
+     
+carouselsList(){
+  return this.state.carousels.map(currentcarousel =>{
+    return <Carousel carousel={currentcarousel} deleteCarousel={this.deleteCarousels} key={currentcarousel._id} editCarousel={this.editCarousel}/>
+  })
+}
+    
+render() {
+  let $imagePreview = (<div className="previewText image-container">Please select an Image for Preview</div>);
+    if (this.state.imagePreviewUrl) {
+      
+      $imagePreview = (<div className="image-container" ><img src={this.state.imagePreviewUrl} alt="icon" width="200" id="image"/> </div>);
+        }
+        if(this.state.update==true){
+          axios.get("http://localhost:5000/carousels/")
         .then(response=>{
-          this.setState({ carousels:response.data})
+          this.setState({ carousels:response.data,
+          });
         })
+        .then(response=>{this.setState({ update:false })})
         .catch((error)=>{
           console.log(error)
         })
-
+        }
        
-      }
+  return (
+    <div>
+      
+      <div className="md-form">
+        <Input type="text"  className="form-control" id="search" placeholder="Search" />
+      </div>
+      <div class="tableFixHead" >
+      <Table  className="table table-striped table-responsive-md btn-table"  >
+    
+        <thead  >
+        <tr >
+          <th>Image</th>
+          <th>Type Room <i className="fa fa-sort fa-  prefix"></i></th>
+          <th>Min Price Room</th>
+          <th>X</th>
+          <th>E</th>
+          </tr>
+        </thead>
+        
+        <tbody  >
+       
+          {this.carouselsList()}
+        
+        </tbody>
+        
+        
+      </Table>
+      </div>
+     
+      <div className="text-right">
+        <Button  color="primary"  onClick={()=>{this.setState({ showModal: true})}}><span className="fa fa-plus " ></span></Button>
    
-      deleteCarousels(id){
-       axios.delete("http://localhost:5000/carousels/"+id)
-       .then(res=> console.log(res.data));
-       this.setState({
-         carousels:this.state.carousels.filter(el=>el._id !== id)
-       })
-      }
-      carouselsList(){
-        return this.state.carousels.map(currentcarousel =>{
-          return <Carousel carousel={currentcarousel} deleteCarousel={this.deleteCarousels} key={currentcarousel._id} editCarousel={this.editCarousel}/>
-        })
-      }
- 
-    render() {
-  
-        return (
-            <div>
+      </div>
+    
+     
+
+
+      <Modal isOpen={this.state.showModal} toggle={() =>this.setState({ showModal: false})}  >
+        <ModalHeader toggle={() => this.setState({  showModal: false,imagePreviewUrl: "",image: "",input:{"captionText":"","captionHeader":""}})} className=" white-text  font-weight-bold py-2 text-center bg-primary" charCode="X"><h3 >Create New Carousel</h3></ModalHeader>
+        <ModalBody>
           
-           <h1>Logged Exercises</h1>
-           <div className="md-form">
-              <input type="text"  className="form-control" id="search" placeholder="Search" />
-              
-          </div>
-          <table  className="table table-striped table-responsive-md btn-table">
-            <thead className="thead-light" >
-              <tr>
-                <th>Image</th>
-                <th>CaptionText <i className="fa fa-sort fa-  prefix"></i></th>
-                <th>CaptionHeader</th>
-                <th>X</th>
-                <th>E</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.carouselsList()}
-            </tbody>
-          </table>
-         
-         <div className="text-right">
-         <Button  color="primary"  onClick={()=>{this.setState({ showModal: true})}}><span className="fa fa-plus " ></span></Button>
-         </div>
-       
-        <Modal isOpen={this.state.showModal} toggle={() =>this.setState({ showModal: false})}  >
-                <ModalHeader toggle={() => this.setState({  showModal: false})} className=" white-text w-100 font-weight-bold py-2 text-center bg-primary" charCode="X"><h3 >Create New Carousel</h3></ModalHeader>
-                <ModalBody>
-         
-   
+            <Form onSubmit={this.onSubmit}  action="/" enctype="multipart/form-data" method="post">  
+              <Row>
+                <Col>{ $imagePreview }</Col>
+                <Col>
+                        <Row>
+                          <Col className="col-9"> 
+                            <Input type="file" name="file-to-upload" id="img" onChange={this.fileChanged.bind(this)}/>
+                          </Col>
+                        </Row>
+                </Col>
+              </Row>
+              <div className="form-group"> 
+                <Input  type="text"
+                    required
+                    name="captionText"
+                    placeholder="CaptionText"
+                    className="form-control"
+                    value={this.state.input["captionText"]}
+                    onChange={this.handleChange}
+                />
+              </div>
+              <div className="form-group"> 
+                <Input  type="text"
+                    required
+                    name="captionHeader"
+                    placeholder="CaptionHeader"
+                    className="form-control"
+                    value={this.state.input["captionHeader"]}
+                    onChange={this.handleChange}
+                    />
+              </div>
+              <Button  type="submit" className="btn btn-primary justify-content-center" color="primary" > <i className="fa fa-paper-plane-o ml-1"  ></i> Save</Button>
+           </Form>
+          
+        </ModalBody>
+      
+      </Modal>
 
 
-<Table className="align-items-center table-flush" responsive>
-                        <div style={{ 'max-height': '20rem', 'overflow': 'auto' }} >
-                        
-                 
-           <form onSubmit={this.onSubmit}>  
-             
-          <div className="form-group"> 
-         
-       
-             <input  type="text"
-                required
-                placeholder="Image"
-                className="form-control"
-                value={this.state.image}
-                onChange={this.onChangeImage}
-                /> 
-          </div>
-          <div className="form-group"> 
+      <Modal isOpen={this.state.showModalEdit} toggle={() =>this.setState({ showModalEdit: false})}  >
+        <ModalHeader toggle={() => this.setState({  showModalEdit: false,image: "",  imagePreviewUrl: "",input:{"captionText":"","captionHeader":""}})}  className=" white-text  font-weight-bold py-2 text-center bg-primary" charCode="X">Carousel edit</ModalHeader>
+        <ModalBody>    
+          <Form onSubmit={this.onSubmitEdit}  action="/" enctype="multipart/form-data" method="post">
+            <Row>
+              <Col><img src={this.state.image} alt="icon" width="200" id="image"/></Col>
+              <Col>
+                    <Row>
+                      <Col className="col-9"> 
+                        <Input type="file" name="file-to-upload" id="img" onChange={this.fileChanged}/>
+                      </Col>
+                    </Row>
+              </Col>
+            </Row>
            
-            <input  type="text"
-                required
-                placeholder="CaptionText"
-                className="form-control"
-                value={this.state.captionText}
-                onChange={this.onChangeCaptionText}
-                />
-          </div>
-          <div className="form-group"> 
-            
-            <input  type="text"
-                required
-                placeholder="CaptionHeader"
-                className="form-control"
-                value={this.state.captionHeader}
-                onChange={this.onChangeCaptionHeader}
-                />
-          </div>
-  
-          <div className="form-group">
-            <button  onClick={this.onSubmit} className="btn btn-primary justify-content-center" color="warning " > <i className="fa fa-paper-plane-o ml-1"  ></i> Save</button>
-          </div>
-        </form>
-
-                        </div>
-                    </Table>
-                </ModalBody>
-                <ModalFooter>
-                    <Row>  
-                  </Row>
-                </ModalFooter>
-                    
-                </Modal>
-
-
-                <Modal isOpen={this.state.showModalEdit} toggle={() =>this.setState({ showModalEdit: false})}  >
-                <ModalHeader toggle={() => this.setState({  showModalEdit: false})}  className=" white-text w-100 font-weight-bold py-2 text-center bg-primary" charCode="X">Carousel edit</ModalHeader>
-                <ModalBody>
-                    <Table className="align-items-center table-flush" responsive>
-                        <div style={{ 'max-height': '20rem', 'overflow': 'auto' }} >
-                      
-      <form onSubmit={this.onSubmitEdit}>
-      
-        <div className="form-group"> 
-          <label>Image: </label>
-          <input  type="text"
-              required
-              className="form-control"
-              value={this.state.image}
-              onChange={this.onChangeImage}
-              />
-        </div>
-        <div className="form-group">
-          <label>Caption Text: </label>
-          <input 
-              type="text" 
-              className="form-control"
-              value={this.state.captionText}
-              onChange={this.onChangeCaptionText}
-              />
-        </div>
-
-        <div className="form-group">
-          <label>Caption Header: </label>
-          <input 
-              type="text" 
-              className="form-control"
-              value={this.state.captionHeader}
-              onChange={this.onChangeCaptionHeader}
-              />
-        </div>
+            <div className="form-group">
+              <Label>Caption Text: </Label>
+              <Input 
+                  type="text" 
+                  name="captionText"
+                  className="form-control"
+                  value={this.state.input["captionText"]}
+                  onChange={this.handleChange}
+                  />
+            </div>
+              
+            <div className="form-group">
+              <Label>Caption Header: </Label>
+              <Input 
+                  type="text" 
+                  name="captionHeader"
+                  className="form-control"
+                  value={this.state.input["captionHeader"]}
+                  onChange={this.handleChange}
+                  />
+            </div>
+            <Button  type="submit" className="btn btn-primary justify-content-center" color="primary" > <i className="fa fa-paper-plane-o ml-1"  ></i> Save Change</Button>
+          </Form>
+        </ModalBody>
         
+      </Modal>
+   
+    </div>
+  )
+}
+}
       
-
-        {/* <div className="form-group">
-          <input type="submit" value="Edit Carousel" className="btn btn-primary" />
-        </div> */}
-        <div className="form-group">
-            <button  onClick={this.onSubmit} className="btn btn-primary justify-content-center" color="warning " > <i className="fa fa-paper-plane-o ml-1"  ></i> Save Change</button>
-          </div>
-      </form>
-
-                        </div>
-                    </Table>
-                </ModalBody>
-             
-                    
-                </Modal>
-         
-
-
-        
-          </div>
-        )
-      }
-    }
+   
+      
+      
+ 
+    
 

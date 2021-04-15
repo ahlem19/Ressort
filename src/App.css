@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+.mydivouter{
+	position:relative;
+	background: #f90;
+    width: 200px;
+    height: 120px;
+    margin: 0 auto;
+}
+.mydivoverlap{
+    position: relative;
+    z-index: 1;
+}
+.mybuttonoverlap{
+	position: absolute;
+    z-index: 2;
+    top: 44px;
+    display: none;
+    left: 59px;	
+}
+.mydivouter:hover .mybuttonoverlap{ 
+	display:block;
+}

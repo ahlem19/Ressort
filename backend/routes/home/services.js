@@ -8,11 +8,13 @@ router.route('/').get((req,res)=>{
 });
 
 router.route('/add').post((req,res)=>{
+    const icon=req.body.icon;
     const title=req.body.title;
     const text=req.body.text;
  
 
     const newService=new Service({
+        icon,
         title,
         text,
        });
@@ -38,6 +40,7 @@ router.route('/:id').delete((req,res)=>{
 router.route('/update/:id').post((req,res)=>{
     Service.findById(req.params.id)
     .then(service=>{
+        service.icon=req.body.icon;
         service.title=req.body.title;
         service.text=req.body.text;
        
